@@ -37,15 +37,21 @@ async function getCurrencyAllUsdtPairs() {
     const response = await binanceAxiosInstance.get('/ticker/price');
     const pairs = response.data;
     const regExp = /USDT$/;
-    const usdtPairs = {};
+    const usdtPairs = [];
     // eslint-disable-next-line
     for (const pair of pairs) {
       const { symbol } = pair;
       if (symbol.match(regExp)) {
-        usdtPairs[pair.symbol] = pair.price;
+        usdtPairs.push({
+          id: symbol,
+          currency: symbol.slice(0, -4),
+          baseCurrency: 'USDT',
+          price: pair.price,
+        });
       }
     }
     console.log(usdtPairs);
+    return usdtPairs;
   } catch (e) {
     if (e.response) {
       console.log(e.response);
