@@ -1,10 +1,10 @@
 <template>
   <div class="currency-item">
-    <span class="currency-item__name"> {{ currencyName }} </span>
-    <span class="currency-item__rate">
-      <span class="currency-item__rate-number">{{ rate }}</span>
+    <div class="currency-item__name"> {{ currencyName }} </div>
+    <div class="currency-item__rate">
+      <div class="currency-item__rate-number">{{ rate }}</div>
        {{ baseCurrencyName }}
-    </span>
+    </div>
   </div>
 </template>
 
@@ -27,6 +27,16 @@ defineProps({
 
 <style scoped>
 .currency-item {
-  width: 100%;
+  font-weight: 500;
+  background: #f5f9ff;
+  border: 1px solid #d0e1fd;
+  padding: 1em 1.5em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.currency-item__rate {
+  display: flex;
+  gap: 8px;
 }
 </style>
