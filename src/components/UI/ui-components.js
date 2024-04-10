@@ -1,13 +1,11 @@
 import Button from 'primevue/button';
 import Card from 'primevue/card';
-import TreeTable from 'primevue/treetable';
-import Column from 'primevue/column';
+import Paginator from 'primevue/paginator';
 
 const components = [
   { component: Button, name: 'VButton' },
-  { component: TreeTable, name: 'VList' },
   { component: Card, name: 'VCard' },
-  { component: Column, name: 'VColumn' },
+  { component: Paginator, name: 'VPagination' },
 ];
 
 export default components;
