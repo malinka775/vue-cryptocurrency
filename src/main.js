@@ -6,6 +6,7 @@ import router from './router';
 import 'primevue/resources/primevue.min.css';
 import 'primevue/resources/themes/lara-light-blue/theme.css';
 import components from './components/UI/ui-components';
+import './styles/styles.css';
 
 const pinia = createPinia();
 const app = createApp(App);
