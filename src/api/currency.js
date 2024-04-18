@@ -50,7 +50,6 @@ async function getCurrencyAllUsdtPairs() {
         });
       }
     }
-    console.log(usdtPairs);
     return usdtPairs;
   } catch (e) {
     if (e.response) {
@@ -66,7 +65,7 @@ async function getFearAndGreedIndex() {
   try {
     const response = await alternAxiosInstance.get('/fng');
     const indexData = response.data.contents;
-    console.log(indexData);
+    return JSON.parse(indexData);
   } catch (e) {
     if (e.response) {
       console.log(e.response);

@@ -34,92 +34,87 @@
 
 <script setup>
 
-import { onBeforeMount, ref } from 'vue';
-// import { useCurrenciesStore } from '@/store/index';
+import { ref, computed } from 'vue';
+import { useCurrenciesStore } from '@/store/index';
 import CurrencyItem from '@/components/CurrencyItem.vue';
-// import { getCurrencyAllUsdtPairs, getFearAndGreedIndex } from '@/api/currency';
+import { getCurrencyAllUsdtPairs } from '@/api/currency';
 
-// const store = useCurrenciesStore();
-// const currencies = computed(() => store.currencies);
-
-const currencies = [
-  {
-    id: 'BTCUSDT', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
-  },
-  {
-    id: 'ETHUSDT', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
-  },
-  {
-    id: 'BNBUSDT', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
-  },
-  {
-    id: 'BCCUSDT', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
-  },
-  {
-    id: 'NEOUSDT', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
-  },
-  {
-    id: 'LTCUSDT', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
-  },
-  {
-    id: 'QTUMUSDT', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
-  },
-  {
-    id: 'BTCUSDT1', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
-  },
-  {
-    id: 'ETHUSDT1', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
-  },
-  {
-    id: 'BNBUSDT1', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
-  },
-  {
-    id: 'BCCUSDT1', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
-  },
-  {
-    id: 'NEOUSDT1', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
-  },
-  {
-    id: 'LTCUSDT1', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
-  },
-  {
-    id: 'QTUMUSDT1', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
-  },
-  {
-    id: 'BTCUSDT2', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
-  },
-  {
-    id: 'ETHUSDT2', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
-  },
-  {
-    id: 'BNBUSDT2', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
-  },
-  {
-    id: 'BCCUSDT2', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
-  },
-  {
-    id: 'NEOUSDT2', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
-  },
-  {
-    id: 'LTCUSDT2', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
-  },
-  {
-    id: 'QTUMUSDT2', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
-  },
-];
+const store = useCurrenciesStore();
+const curr = await getCurrencyAllUsdtPairs();
+store.setCurrencies(curr);
+const currencies = computed(() => store.currencies);
+// const currencies = [
+//   {
+//     id: 'BTCUSDT', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
+//   },
+//   {
+//     id: 'ETHUSDT', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
+//   },
+//   {
+//     id: 'BNBUSDT', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
+//   },
+//   {
+//     id: 'BCCUSDT', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
+//   },
+//   {
+//     id: 'NEOUSDT', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
+//   },
+//   {
+//     id: 'LTCUSDT', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
+//   },
+//   {
+//     id: 'QTUMUSDT', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
+//   },
+//   {
+//     id: 'BTCUSDT1', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
+//   },
+//   {
+//     id: 'ETHUSDT1', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
+//   },
+//   {
+//     id: 'BNBUSDT1', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
+//   },
+//   {
+//     id: 'BCCUSDT1', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
+//   },
+//   {
+//     id: 'NEOUSDT1', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
+//   },
+//   {
+//     id: 'LTCUSDT1', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
+//   },
+//   {
+//     id: 'QTUMUSDT1', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
+//   },
+//   {
+//     id: 'BTCUSDT2', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
+//   },
+//   {
+//     id: 'ETHUSDT2', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
+//   },
+//   {
+//     id: 'BNBUSDT2', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
+//   },
+//   {
+//     id: 'BCCUSDT2', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
+//   },
+//   {
+//     id: 'NEOUSDT2', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
+//   },
+//   {
+//     id: 'LTCUSDT2', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
+//   },
+//   {
+//     id: 'QTUMUSDT2', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
+//   },
+// ];
 const ITEMS_PER_PAGE = 10;
-const currenciesToShow = ref(currencies.slice(0, ITEMS_PER_PAGE));
+
+const currenciesToShow = ref(currencies.value.slice(0, ITEMS_PER_PAGE));
 const updateCurrencies = ({ page }) => {
   // eslint-disable-next-line max-len
-  currenciesToShow.value = currencies.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+  currenciesToShow.value = currencies.value.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 };
-onBeforeMount(async () => {
-  console.log(1);
-  // const curr = await getCurrencyAllUsdtPairs();
-  // store.setCurrencies(curr);
-});
-
-// getFearAndGreedIndex();
 
 </script>
 
@@ -144,11 +139,11 @@ onBeforeMount(async () => {
 }
 
 .currency-wrapper {
-  overflow: auto;
+  overflow: scroll;
 }
 
 .currency-pagination {
-  padding: 0;
+  padding: 10px 0 0;
 }
 
 .currency-pagination .p-paginator {

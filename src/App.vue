@@ -1,7 +1,10 @@
 <template>
+  <Suspense>
     <VHeader/>
+  </Suspense>
+    <Suspense>
     <router-view/>
-
+  </Suspense>
 </template>
 
 <script setup>
