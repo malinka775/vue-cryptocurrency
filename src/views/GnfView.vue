@@ -2,7 +2,7 @@
 <template>
   <div class="gnf">
     <VContainer class="gnf-article gnf-center">
-      <h1 class="gnf-title">Greed and fear index today is 20</h1>
+      <h1 class="gnf-title">Greed and fear index today is {{ gnf }}</h1>
       <img class="gnf-img" src="https://alternative.me/crypto/fear-and-greed-index.png" alt="Latest Crypto Greed & Fear Index" />
     </VContainer>
     <VContainer class="gnf-article">
@@ -23,6 +23,14 @@
     </VContainer>
   </div>
 </template>
+
+<script setup>
+import { computed } from 'vue';
+import { useCurrenciesStore } from '@/store/index';
+
+const store = useCurrenciesStore();
+const gnf = computed(() => store.gnfCoefficient);
+</script>
 
 <style scoped>
 .gnf {

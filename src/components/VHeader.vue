@@ -28,15 +28,17 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useCurrenciesStore } from '@/store/index';
 import { getFearAndGreedIndex } from '@/api/currency';
 
 const router = useRouter();
-const gnf = ref(null);
 const isShowGnfIndex = computed(() => router.currentRoute.value.href !== '/greed-and-fear');
 const coef = await getFearAndGreedIndex();
-gnf.value = coef.data[0].value;
+const store = useCurrenciesStore();
+store.setGnfCoefficient(coef.data[0].value);
+const gnf = store.gnfCoefficient;
 // eslint-disable-next-line dot-notation
 </script>
 
