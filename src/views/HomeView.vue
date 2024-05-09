@@ -6,6 +6,12 @@
 <template>
   <div class="home">
     <VContainer class="currency-container">
+      <div class="input-wrapper">
+        <IconField iconPosition="left" class="input-field">
+          <InputIcon class="pi pi-search"> </InputIcon>
+          <InputText v-model="searchedCurrency" class="input-text" placeholder="Enter base currency, e.g. USDT" @blur="searchPairs"/>
+        </IconField>
+      </div>
       <div class="currency-wrapper">
         <div class="currency-list">
         <CurrencyItem
@@ -22,6 +28,7 @@
             '568px': 'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink',
             default: 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport'
         }"
+        v-model:first="offset"
         :rows="ITEMS_PER_PAGE"
         :totalRecords="currencies.length"
         @page="updateCurrencies"
@@ -39,10 +46,26 @@ import { useCurrenciesStore } from '@/store/index';
 import CurrencyItem from '@/components/CurrencyItem.vue';
 import { getCurrencyAllUsdtPairs } from '@/api/currency';
 
+const ITEMS_PER_PAGE = 10;
+
+const searchedCurrency = ref('');
+
+const offset = ref(0);
+
 const store = useCurrenciesStore();
 const curr = await getCurrencyAllUsdtPairs();
 store.setCurrencies(curr);
 const currencies = computed(() => store.currencies);
+const currenciesToShow = ref(currencies.value.slice(0, ITEMS_PER_PAGE));
+
+const searchPairs = async () => {
+  const string = searchedCurrency.value || 'USDT';
+  const searchedCurrencies = await getCurrencyAllUsdtPairs(string);
+  store.setCurrencies(searchedCurrencies);
+  currenciesToShow.value = searchedCurrencies.slice(0, ITEMS_PER_PAGE);
+  offset.value = 0;
+};
+
 // const currencies = [
 //   {
 //     id: 'BTCUSDT', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
@@ -108,12 +131,13 @@ const currencies = computed(() => store.currencies);
 //     id: 'QTUMUSDT2', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
 //   },
 // ];
-const ITEMS_PER_PAGE = 10;
 
-const currenciesToShow = ref(currencies.value.slice(0, ITEMS_PER_PAGE));
 const updateCurrencies = ({ page }) => {
   // eslint-disable-next-line max-len
+  console.log(currencies.value.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE));
+  // eslint-disable-next-line max-len
   currenciesToShow.value = currencies.value.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+  console.log('page', page, 'currToShow', currenciesToShow.value);
 };
 
 </script>
@@ -125,6 +149,21 @@ const updateCurrencies = ({ page }) => {
   flex-direction: column;
   padding: 15px;
 }
+
+.input-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+}
+
+.input-text {
+  width: 100%;
+}
+
+.input-field {
+  width: 100%;
+}
+
 .currency-list {
   display: flex;
   flex-direction: column;
@@ -148,5 +187,11 @@ const updateCurrencies = ({ page }) => {
 
 .currency-pagination .p-paginator {
   padding: 0;
+}
+
+@media screen and (max-width: 568px) {
+  .input-text {
+    font-size: 12px;
+  }
 }
 </style>

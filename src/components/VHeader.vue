@@ -39,7 +39,6 @@ const coef = await getFearAndGreedIndex();
 const store = useCurrenciesStore();
 store.setGnfCoefficient(coef.data[0].value);
 const gnf = store.gnfCoefficient;
-// eslint-disable-next-line dot-notation
 </script>
 
 <style scoped>
@@ -67,5 +66,11 @@ nav a .p-button:focus {
 nav a.router-link-exact-active .p-button {
   background-color: #334155;
   border-color: #334155;
+}
+
+@media screen and (max-width: 568px) {
+  .gnf {
+    display: none;
+  }
 }
 </style>

@@ -9,6 +9,7 @@ import 'primevue/resources/themes/lara-light-blue/theme.css';
 import components from './components/UI/ui-components';
 
 import './styles/styles.css';
+import 'primeicons/primeicons.css';
 
 const pinia = createPinia();
 const app = createApp(App);

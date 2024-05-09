@@ -1,5 +1,10 @@
 import axios from 'axios';
 
+const config = {
+  myApiKey: '23de8390d1ab938e15aaf4753b6663e03d060c1f',
+  testAddress: '1335zLG7fgUpMAvjy5Ga2FmPzSASFHrc1u',
+};
+
 const binanceAxiosConfig = {
   baseURL: 'https://api.binance.com/api/v3',
   headers: {
@@ -14,8 +19,17 @@ const alternAxiosConfig = {
   },
 };
 
+const cryptoApisAxiosConfig = {
+  baseURL: 'https://rest.cryptoapis.io',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': config.myApiKey,
+  },
+};
+
 const binanceAxiosInstance = axios.create(binanceAxiosConfig);
 const alternAxiosInstance = axios.create(alternAxiosConfig);
+const cryptoApisAxiosInstance = axios.create(cryptoApisAxiosConfig);
 
 async function getCurrencyPrice(currency, baseCurrency) {
   const params = { symbol: `${currency}${baseCurrency}` };
@@ -32,25 +46,26 @@ async function getCurrencyPrice(currency, baseCurrency) {
   }
 }
 
-async function getCurrencyAllUsdtPairs() {
+async function getCurrencyAllUsdtPairs(currency = 'USDT') {
   try {
     const response = await binanceAxiosInstance.get('/ticker/price');
     const pairs = response.data;
-    const regExp = /USDT$/;
-    const usdtPairs = [];
+    const regExp = new RegExp(`${currency}$`);
+    const currencyPairs = [];
     // eslint-disable-next-line
     for (const pair of pairs) {
       const { symbol } = pair;
       if (symbol.match(regExp)) {
-        usdtPairs.push({
+        currencyPairs.push({
           id: symbol,
           currency: symbol.slice(0, -4),
-          baseCurrency: 'USDT',
+          baseCurrency: currency,
           price: pair.price,
         });
       }
     }
-    return usdtPairs;
+    console.log('currencyPairs', currencyPairs);
+    return currencyPairs;
   } catch (e) {
     if (e.response) {
       console.log(e.response);
@@ -76,4 +91,20 @@ async function getFearAndGreedIndex() {
   }
 }
 
-export { getCurrencyPrice, getCurrencyAllUsdtPairs, getFearAndGreedIndex };
+async function getWalletBalance(address = config.testAddress, blockchain = 'binance-smart-chain') {
+  try {
+    const response = await cryptoApisAxiosInstance.get(`/blockchain-data/${blockchain}/testnet/addresses/${address}/balance`);
+    console.log(response);
+  } catch (e) {
+    if (e.response) {
+      console.log(e.response);
+    } else {
+      console.log(e.message || 'Something went wrong. Please try again later');
+    }
+    throw new Error(e.message);
+  }
+}
+
+export {
+  getCurrencyPrice, getCurrencyAllUsdtPairs, getFearAndGreedIndex, getWalletBalance,
+};
