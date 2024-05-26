@@ -2,7 +2,8 @@
   <div class="gnf">
     <VContainer class="gnf-article gnf-center">
       <h1 class="gnf-title">Greed and fear index today is {{ gnf }}</h1>
-      <img class="gnf-img" src="https://alternative.me/crypto/fear-and-greed-index.png" alt="Latest Crypto Greed & Fear Index" />
+      <VSpinner v-if="isImgLoading"/>
+      <img v-else class="gnf-img" :src="imgSrc" alt="Latest Crypto Greed & Fear Index" />
     </VContainer>
     <VContainer class="gnf-article">
       <h2>What's greed and fear index?</h2>
@@ -24,9 +25,23 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useCurrenciesStore } from '@/store/index';
 
+const imgSrc = ref(null);
+const isImgLoading = ref(false);
+
+const loadImg = async () => {
+  isImgLoading.value = true;
+  const image = new Image();
+  image.src = 'https://alternative.me/crypto/fear-and-greed-index.png';
+  image.onload = () => {
+    console.log('image loaded');
+    imgSrc.value = image.src;
+    isImgLoading.value = false;
+  };
+};
+loadImg();
 const store = useCurrenciesStore();
 const gnf = computed(() => store.gnfCoefficient);
 </script>

@@ -39,4 +39,10 @@ defineProps({
   display: flex;
   gap: 8px;
 }
+
+@media screen and (max-width: 568px) {
+  .currency-item {
+    padding: 1em 0.5em;
+  }
+}
 </style>

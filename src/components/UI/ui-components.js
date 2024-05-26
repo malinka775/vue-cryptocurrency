@@ -4,7 +4,9 @@ import Paginator from 'primevue/paginator';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
-import ProgressSpinner from 'primevue/progressspinner';
+import Skeleton from 'primevue/skeleton';
+import Dropdown from 'primevue/dropdown';
+import VSpinner from './VSpinner.vue';
 import VContainer from './VContainer.vue';
 
 const components = [
@@ -14,7 +16,9 @@ const components = [
   { component: IconField, name: 'IconField' },
   { component: InputIcon, name: 'InputIcon' },
   { component: InputText, name: 'InputText' },
-  { component: ProgressSpinner, name: 'ProgressSpinner' },
+  { component: Skeleton, name: 'VSkeleton' },
+  { component: Dropdown, name: 'VDropdown' },
+  { component: VSpinner, name: 'VSpinner' },
   { component: VContainer, name: 'VContainer' },
 ];
 

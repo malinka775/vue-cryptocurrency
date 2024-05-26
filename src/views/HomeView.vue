@@ -12,27 +12,32 @@
         </IconField>
       </div>
       <div class="currency-wrapper">
-        <ProgressSpinner v-if="isLoading"/>
-        <div v-else-if="currenciesToShow?.length > 0" class="currency-list">
-          <CurrencyItem
+        <div class="currency-list">
+          <template v-if="isLoading">
+            <VSkeleton v-for='index in 10' :key="index" height='56px' borderRadius="5px"/>
+          </template>
+          <template v-else-if="currenciesToShow?.length > 0">
+            <CurrencyItem
             v-for="currency in currenciesToShow"
             :key="currency.id"
             :base-currency-name="currency.baseCurrency"
             :currency-name="currency.currency"
             :rate="currency.price"
           />
-        </div>
-        <div v-else>
-          We weren't able to find pairs for base currency named "{{ searchedCurrencyName }}"
+          </template>
+          <template v-else>
+            We weren't able to find pairs for base currency named "{{ searchedCurrencyName }}"
+          </template>
         </div>
       </div>
       <VPagination
         :template="{
-            '568px': 'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink',
+            '380px': 'PrevPageLink CurrentPageReport NextPageLink',
+            '620px': 'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink',
             default:
               'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport',
         }"
-        v-if="currencies.length > 0"
+        v-if="currencies.length > ITEMS_PER_PAGE"
         v-model:first="offset"
         :rows="ITEMS_PER_PAGE"
         :totalRecords="currencies.length"
