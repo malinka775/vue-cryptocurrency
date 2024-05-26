@@ -32,6 +32,7 @@
             default:
               'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport',
         }"
+        v-if="currencies.length > 0"
         v-model:first="offset"
         :rows="ITEMS_PER_PAGE"
         :totalRecords="currencies.length"
@@ -66,8 +67,6 @@ const fetchInitialData = async () => {
   store.setCurrencies(curr);
   const assets = await getListOfAvailableAssets();
   store.setAvailableCurrencies(assets);
-  console.log('available assets', assets);
-  console.log('available assets has eth', assets.has('ETH'));
 };
 await fetchInitialData();
 const currencies = computed(() => store.currencies);
@@ -78,6 +77,7 @@ const searchPairs = async () => {
   if (inputValue.value === '' || !store.availableCurrencies.has(searchedCurrencyName.value.toUpperCase())) {
     isLoading.value = false;
     currenciesToShow.value = [];
+    store.setCurrencies([]);
     return;
   }
   const searchedCurrencies = await getAllBaseCurrencyPairs(searchedCurrencyName.value);
