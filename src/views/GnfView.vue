@@ -1,4 +1,3 @@
-<!-- eslint-disable max-len -->
 <template>
   <div class="gnf">
     <VContainer class="gnf-article gnf-center">

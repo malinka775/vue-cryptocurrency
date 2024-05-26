@@ -1,10 +1,5 @@
 import axios from 'axios';
 
-const config = {
-  myApiKey: '23de8390d1ab938e15aaf4753b6663e03d060c1f',
-  testAddress: '1335zLG7fgUpMAvjy5Ga2FmPzSASFHrc1u',
-};
-
 const binanceAxiosConfig = {
   baseURL: 'https://api.binance.com/api/v3',
   headers: {
@@ -19,23 +14,14 @@ const alternAxiosConfig = {
   },
 };
 
-const cryptoApisAxiosConfig = {
-  baseURL: 'https://rest.cryptoapis.io',
-  headers: {
-    'Content-Type': 'application/json',
-    'X-API-Key': config.myApiKey,
-  },
-};
-
 const binanceAxiosInstance = axios.create(binanceAxiosConfig);
 const alternAxiosInstance = axios.create(alternAxiosConfig);
-const cryptoApisAxiosInstance = axios.create(cryptoApisAxiosConfig);
-
-async function getCurrencyPrice(currency, baseCurrency) {
-  const params = { symbol: `${currency}${baseCurrency}` };
+async function getListOfAvailableAssets() {
   try {
-    const response = await binanceAxiosInstance.get('/ticker/price', { params });
-    console.log(response);
+    const response = await binanceAxiosInstance.get('/exchangeInfo');
+    console.log('resp', response);
+    const symbols = response.data.symbols.map((symbol) => symbol.quoteAsset);
+    return new Set(symbols);
   } catch (e) {
     if (e.response) {
       console.log(e.response);
@@ -45,12 +31,12 @@ async function getCurrencyPrice(currency, baseCurrency) {
     throw new Error(e.message);
   }
 }
-
-async function getCurrencyAllUsdtPairs(currency = 'USDT') {
+async function getAllBaseCurrencyPairs(currency = 'USDT') {
+  const currencyName = currency.toUpperCase();
   try {
     const response = await binanceAxiosInstance.get('/ticker/price');
     const pairs = response.data;
-    const regExp = new RegExp(`${currency}$`);
+    const regExp = new RegExp(`${currencyName}$`);
     const currencyPairs = [];
     // eslint-disable-next-line
     for (const pair of pairs) {
@@ -58,8 +44,8 @@ async function getCurrencyAllUsdtPairs(currency = 'USDT') {
       if (symbol.match(regExp)) {
         currencyPairs.push({
           id: symbol,
-          currency: symbol.slice(0, -4),
-          baseCurrency: currency,
+          currency: symbol.slice(0, -currencyName.length),
+          baseCurrency: currencyName,
           price: pair.price,
         });
       }
@@ -91,20 +77,4 @@ async function getFearAndGreedIndex() {
   }
 }
 
-async function getWalletBalance(address = config.testAddress, blockchain = 'binance-smart-chain') {
-  try {
-    const response = await cryptoApisAxiosInstance.get(`/blockchain-data/${blockchain}/testnet/addresses/${address}/balance`);
-    console.log(response);
-  } catch (e) {
-    if (e.response) {
-      console.log(e.response);
-    } else {
-      console.log(e.message || 'Something went wrong. Please try again later');
-    }
-    throw new Error(e.message);
-  }
-}
-
-export {
-  getCurrencyPrice, getCurrencyAllUsdtPairs, getFearAndGreedIndex, getWalletBalance,
-};
+export { getAllBaseCurrencyPairs, getFearAndGreedIndex, getListOfAvailableAssets };

@@ -1,32 +1,36 @@
-<!-- eslint-disable max-len -->
-<!-- eslint-disable import/no-unresolved -->
-<!-- eslint-disable no-unused-vars -->
-<!-- eslint-disable no-useless-return -->
-<!-- eslint-disable no-unused-vars -->
 <template>
   <div class="home">
     <VContainer class="currency-container">
       <div class="input-wrapper">
         <IconField iconPosition="left" class="input-field">
-          <InputIcon class="pi pi-search"> </InputIcon>
-          <InputText v-model="searchedCurrency" class="input-text" placeholder="Enter base currency, e.g. USDT" @blur="searchPairs"/>
+          <InputIcon class="pi pi-search inpit-icon"  @click="searchPairs"/>
+          <InputText
+            v-model="inputValue"
+            class="input-text"
+            placeholder="Enter base currency, e.g. USDT"
+            @keypress.enter="searchPairs"/>
         </IconField>
       </div>
       <div class="currency-wrapper">
-        <div class="currency-list">
-        <CurrencyItem
-          v-for="currency in currenciesToShow"
-          :key="currency.id"
-          :base-currency-name="currency.baseCurrency"
-          :currency-name="currency.currency"
-          :rate="currency.price"
-        />
+        <ProgressSpinner v-if="isLoading"/>
+        <div v-else-if="currenciesToShow?.length > 0" class="currency-list">
+          <CurrencyItem
+            v-for="currency in currenciesToShow"
+            :key="currency.id"
+            :base-currency-name="currency.baseCurrency"
+            :currency-name="currency.currency"
+            :rate="currency.price"
+          />
+        </div>
+        <div v-else>
+          We weren't able to find pairs for base currency named "{{ searchedCurrencyName }}"
         </div>
       </div>
       <VPagination
         :template="{
             '568px': 'FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink',
-            default: 'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport'
+            default:
+              'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport',
         }"
         v-model:first="offset"
         :rows="ITEMS_PER_PAGE"
@@ -41,104 +45,55 @@
 
 <script setup>
 
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useCurrenciesStore } from '@/store/index';
 import CurrencyItem from '@/components/CurrencyItem.vue';
-import { getCurrencyAllUsdtPairs } from '@/api/currency';
+import { getAllBaseCurrencyPairs, getListOfAvailableAssets } from '@/api/currency';
 
 const ITEMS_PER_PAGE = 10;
 
-const searchedCurrency = ref('');
-
+const inputValue = ref('');
+const searchedCurrencyName = ref('');
+const currenciesToShow = ref([]);
 const offset = ref(0);
+const isLoading = ref(false);
 
 const store = useCurrenciesStore();
-const curr = await getCurrencyAllUsdtPairs();
-store.setCurrencies(curr);
+const fetchInitialData = async () => {
+  isLoading.value = true;
+  const curr = await getAllBaseCurrencyPairs();
+  isLoading.value = false;
+  store.setCurrencies(curr);
+  const assets = await getListOfAvailableAssets();
+  store.setAvailableCurrencies(assets);
+  console.log('available assets', assets);
+  console.log('available assets has eth', assets.has('ETH'));
+};
+await fetchInitialData();
 const currencies = computed(() => store.currencies);
-const currenciesToShow = ref(currencies.value.slice(0, ITEMS_PER_PAGE));
 
 const searchPairs = async () => {
-  const string = searchedCurrency.value || 'USDT';
-  const searchedCurrencies = await getCurrencyAllUsdtPairs(string);
+  isLoading.value = true;
+  searchedCurrencyName.value = inputValue.value;
+  if (inputValue.value === '' || !store.availableCurrencies.has(searchedCurrencyName.value.toUpperCase())) {
+    isLoading.value = false;
+    currenciesToShow.value = [];
+    return;
+  }
+  const searchedCurrencies = await getAllBaseCurrencyPairs(searchedCurrencyName.value);
+  isLoading.value = false;
   store.setCurrencies(searchedCurrencies);
   currenciesToShow.value = searchedCurrencies.slice(0, ITEMS_PER_PAGE);
   offset.value = 0;
 };
 
-// const currencies = [
-//   {
-//     id: 'BTCUSDT', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
-//   },
-//   {
-//     id: 'ETHUSDT', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
-//   },
-//   {
-//     id: 'BNBUSDT', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
-//   },
-//   {
-//     id: 'BCCUSDT', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
-//   },
-//   {
-//     id: 'NEOUSDT', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
-//   },
-//   {
-//     id: 'LTCUSDT', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
-//   },
-//   {
-//     id: 'QTUMUSDT', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
-//   },
-//   {
-//     id: 'BTCUSDT1', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
-//   },
-//   {
-//     id: 'ETHUSDT1', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
-//   },
-//   {
-//     id: 'BNBUSDT1', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
-//   },
-//   {
-//     id: 'BCCUSDT1', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
-//   },
-//   {
-//     id: 'NEOUSDT1', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
-//   },
-//   {
-//     id: 'LTCUSDT1', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
-//   },
-//   {
-//     id: 'QTUMUSDT1', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
-//   },
-//   {
-//     id: 'BTCUSDT2', currency: 'BTC', baseCurrency: 'USDT', price: '68861.61000000',
-//   },
-//   {
-//     id: 'ETHUSDT2', currency: 'ETH', baseCurrency: 'USDT', price: '3501.36000000',
-//   },
-//   {
-//     id: 'BNBUSDT2', currency: 'BNB', baseCurrency: 'USDT', price: '579.10000000',
-//   },
-//   {
-//     id: 'BCCUSDT2', currency: 'BCC', baseCurrency: 'USDT', price: '448.70000000',
-//   },
-//   {
-//     id: 'NEOUSDT2', currency: 'NEO', baseCurrency: 'USDT', price: '19.44000000',
-//   },
-//   {
-//     id: 'LTCUSDT2', currency: 'LTC', baseCurrency: 'USDT', price: '98.12000000',
-//   },
-//   {
-//     id: 'QTUMUSDT2', currency: 'QTUM', baseCurrency: 'USDT', price: '4.62500000',
-//   },
-// ];
-
 const updateCurrencies = ({ page }) => {
-  // eslint-disable-next-line max-len
-  console.log(currencies.value.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE));
-  // eslint-disable-next-line max-len
   currenciesToShow.value = currencies.value.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
-  console.log('page', page, 'currToShow', currenciesToShow.value);
 };
+
+onMounted(() => {
+  currenciesToShow.value = currencies.value.slice(0, ITEMS_PER_PAGE);
+});
 
 </script>
 
@@ -152,10 +107,13 @@ const updateCurrencies = ({ page }) => {
 
 .input-wrapper {
   display: flex;
+  height: fit-content;
   justify-content: flex-end;
   margin-bottom: 15px;
 }
-
+.inpit-icon {
+  cursor: pointer;
+}
 .input-text {
   width: 100%;
 }
@@ -172,7 +130,7 @@ const updateCurrencies = ({ page }) => {
 .currency-container {
   flex-grow: 1;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: auto 1fr auto;
   padding: 10px;
   max-height: 100%;
 }
