@@ -2,7 +2,7 @@
   <Suspense>
     <VHeader/>
   </Suspense>
-    <Suspense>
+  <Suspense>
     <router-view/>
   </Suspense>
 </template>

@@ -1,6 +1,9 @@
 <template>
   <div class="home">
-    <VContainer class="currency-container">
+    <VContainer v-if=isPageLoading class="spinner-container">
+      <VSpinner/>
+    </VContainer>
+    <VContainer v-else class="currency-container">
       <div class="dropdown-wrapper">
         <VDropdown
           filter @change="(e) => filterCur(e)"
@@ -13,7 +16,7 @@
       <div class="currency-wrapper">
         <div class="currency-list">
           <template v-if="isLoading">
-            <VSkeleton v-for='index in 10' :key="index" height='56px' borderRadius="5px"/>
+            <VSkeleton v-for='index in ITEMS_PER_PAGE' :key="index" height='56px' borderRadius="5px"/>
           </template>
           <template v-else-if="currenciesToShow?.length > 0">
             <CurrencyItem
@@ -62,19 +65,22 @@ const ITEMS_PER_PAGE = 10;
 const searchedCurrencyName = ref('');
 const currenciesToShow = ref([]);
 const offset = ref(0);
+const isPageLoading = ref(false);
 const isLoading = ref(false);
 const currency = ref(null);
 const filterOptions = computed(() => Array.from(store.availableCurrencies).map((cur) => ({ name: cur })));
 
 const fetchInitialData = async () => {
+  isPageLoading.value = true;
   isLoading.value = true;
   const curr = await getAllBaseCurrencyPairs();
   isLoading.value = false;
+  isPageLoading.value = false;
   store.setCurrencies(curr);
   const assets = await getListOfAvailableAssets();
   store.setAvailableCurrencies(assets);
 };
-await fetchInitialData();
+fetchInitialData();
 const currencies = computed(() => store.currencies);
 
 const searchPairs = async (baseCurrency) => {
@@ -112,6 +118,14 @@ onMounted(() => {
   height: calc(100vh - 82px);
   flex-direction: column;
   padding: 15px;
+}
+
+.spinner-container {
+  padding: 1em;
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+  align-items: center;
 }
 
 .dropdown-wrapper {
