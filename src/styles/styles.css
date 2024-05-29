@@ -4,6 +4,7 @@ html {
 #app {
   --font-family: Roboto, sans-serif;
   font-family: var(--font-family);
+  background: var(--surface-100);
 }
 
 body {

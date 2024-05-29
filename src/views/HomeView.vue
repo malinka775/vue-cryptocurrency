@@ -17,12 +17,12 @@
           </template>
           <template v-else-if="currenciesToShow?.length > 0">
             <CurrencyItem
-            v-for="currency in currenciesToShow"
-            :key="currency.id"
-            :base-currency-name="currency.baseCurrency"
-            :currency-name="currency.currency"
-            :rate="currency.price"
-          />
+              v-for="currency in currenciesToShow"
+              :key="currency.id"
+              :base-currency-name="currency.baseCurrency"
+              :currency-name="currency.currency"
+              :rate="currency.price"
+            />
           </template>
           <template v-else>
             We weren't able to find pairs for base currency named "{{ searchedCurrencyName }}"

@@ -6,10 +6,8 @@
 
 <style scoped>
 .container {
-  background: #ffffff;
-    color: #4b5563;
-    box-shadow: 0 2px 1px -1px rgba(0, 0, 0, 0.2),
-      0 1px 1px 0 rgba(0, 0, 0, 0.14),
-      0 1px 3px 0 rgba(0, 0, 0, 0.12);
+  background: var(--surface-50);
+    color: var(--surface-500);
+    box-shadow: 1px 2px 6px -2px var(--primary-color);
 }
 </style>

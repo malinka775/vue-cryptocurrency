@@ -7,14 +7,14 @@
       <router-link to="/">
         <VButton
           label="Home"
-          severity="secondary"
+          :severity="getSeverity('home')"
           class="p-button-sm"
         />
       </router-link>
       <router-link to="/greed-and-fear">
         <VButton
           label="Greed and fear index"
-          severity="secondary"
+          :severity="getSeverity('greed-and-fear')"
           class="p-button-sm"
         />
       </router-link>
@@ -39,6 +39,8 @@ const coef = await getFearAndGreedIndex();
 const store = useCurrenciesStore();
 store.setGnfCoefficient(coef.data[0].value);
 const gnf = store.gnfCoefficient;
+
+const getSeverity = (routeName) => (router.currentRoute.value.name === routeName ? 'primary' : 'secondary');
 </script>
 
 <style scoped>
@@ -50,6 +52,7 @@ const gnf = store.gnfCoefficient;
 .gnf {
   margin-left: auto;
   text-decoration: none;
+  color: var(--text-color-secondary);
 }
 .gnf:visited {
   color: inherit;
@@ -57,15 +60,6 @@ const gnf = store.gnfCoefficient;
 nav {
   display: flex;
   gap: 15px;
-}
-
-nav a .p-button:focus {
-  box-shadow: none;
-}
-
-nav a.router-link-exact-active .p-button {
-  background-color: #334155;
-  border-color: #334155;
 }
 
 @media screen and (max-width: 568px) {
