@@ -1,15 +1,14 @@
 <template>
   <div class="home">
     <VContainer class="currency-container">
-      <div class="input-wrapper">
-        <IconField iconPosition="left" class="input-field">
-          <InputIcon class="pi pi-search inpit-icon"  @click="searchPairs"/>
-          <InputText
-            v-model="inputValue"
-            class="input-text"
-            placeholder="Enter base currency, e.g. USDT"
-            @keypress.enter="searchPairs"/>
-        </IconField>
+      <div class="dropdown-wrapper">
+        <VDropdown
+          filter @change="(e) => filterCur(e)"
+          v-model="currency"
+          :options="filterOptions"
+          optionLabel="name"
+          placeholder="Select currency, e.g. USDT"
+          class="currency-dropdown" />
       </div>
       <div class="currency-wrapper">
         <div class="currency-list">
@@ -56,15 +55,17 @@ import { useCurrenciesStore } from '@/store/index';
 import CurrencyItem from '@/components/CurrencyItem.vue';
 import { getAllBaseCurrencyPairs, getListOfAvailableAssets } from '@/api/currency';
 
+const store = useCurrenciesStore();
+
 const ITEMS_PER_PAGE = 10;
 
-const inputValue = ref('');
 const searchedCurrencyName = ref('');
 const currenciesToShow = ref([]);
 const offset = ref(0);
 const isLoading = ref(false);
+const currency = ref(null);
+const filterOptions = computed(() => Array.from(store.availableCurrencies).map((cur) => ({ name: cur })));
 
-const store = useCurrenciesStore();
 const fetchInitialData = async () => {
   isLoading.value = true;
   const curr = await getAllBaseCurrencyPairs();
@@ -76,20 +77,23 @@ const fetchInitialData = async () => {
 await fetchInitialData();
 const currencies = computed(() => store.currencies);
 
-const searchPairs = async () => {
+const searchPairs = async (baseCurrency) => {
   isLoading.value = true;
-  searchedCurrencyName.value = inputValue.value;
-  if (inputValue.value === '' || !store.availableCurrencies.has(searchedCurrencyName.value.toUpperCase())) {
+  if (baseCurrency === '' || !store.availableCurrencies.has(baseCurrency.toUpperCase())) {
     isLoading.value = false;
     currenciesToShow.value = [];
     store.setCurrencies([]);
     return;
   }
-  const searchedCurrencies = await getAllBaseCurrencyPairs(searchedCurrencyName.value);
+  const searchedCurrencies = await getAllBaseCurrencyPairs(baseCurrency);
   isLoading.value = false;
   store.setCurrencies(searchedCurrencies);
   currenciesToShow.value = searchedCurrencies.slice(0, ITEMS_PER_PAGE);
   offset.value = 0;
+};
+
+const filterCur = (e) => {
+  searchPairs(e.value.name);
 };
 
 const updateCurrencies = ({ page }) => {
@@ -110,21 +114,17 @@ onMounted(() => {
   padding: 15px;
 }
 
-.input-wrapper {
+.dropdown-wrapper {
   display: flex;
-  height: fit-content;
-  justify-content: flex-end;
   margin-bottom: 15px;
 }
-.inpit-icon {
-  cursor: pointer;
-}
-.input-text {
-  width: 100%;
+
+.p-dropdown-placeholder {
+  font-size: 10px;
 }
 
-.input-field {
-  width: 100%;
+.currency-dropdown {
+  min-width: 270px;
 }
 
 .currency-list {
@@ -152,9 +152,4 @@ onMounted(() => {
   padding: 0;
 }
 
-@media screen and (max-width: 568px) {
-  .input-text {
-    font-size: 12px;
-  }
-}
 </style>
