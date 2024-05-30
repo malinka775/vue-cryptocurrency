@@ -1,10 +1,11 @@
 <template>
   <div class="home">
-    <VContainer v-if=isPageLoading class="spinner-container">
+    <VContainer v-if="isPageLoading" class="spinner-container">
       <VSpinner/>
     </VContainer>
     <VContainer v-else class="currency-container">
       <div class="dropdown-wrapper">
+        <span class="dropdown-info-text"> Select base currency</span>
         <VDropdown
           filter @change="(e) => filterCur(e)"
           v-model="currency"
@@ -39,10 +40,10 @@
             default:
               'FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport',
         }"
-        v-if="currencies.length > ITEMS_PER_PAGE"
+        v-if="currencies?.length > ITEMS_PER_PAGE"
         v-model:first="offset"
         :rows="ITEMS_PER_PAGE"
-        :totalRecords="currencies.length"
+        :totalRecords="currencies?.length"
         @page="updateCurrencies"
         class="currency-pagination"
       >
@@ -53,7 +54,9 @@
 
 <script setup>
 
-import { ref, computed, onMounted } from 'vue';
+import {
+  ref, computed, onMounted, watch,
+} from 'vue';
 import { useCurrenciesStore } from '@/store/index';
 import CurrencyItem from '@/components/CurrencyItem.vue';
 import { getAllBaseCurrencyPairs, getListOfAvailableAssets } from '@/api/currency';
@@ -67,21 +70,34 @@ const currenciesToShow = ref([]);
 const offset = ref(0);
 const isPageLoading = ref(false);
 const isLoading = ref(false);
-const currency = ref(null);
-const filterOptions = computed(() => Array.from(store.availableCurrencies).map((cur) => ({ name: cur })));
+const currency = ref({ name: 'USDT' });
+const filterOptions = computed(() => {
+  const availableCurrencies = store.availableCurrencies || [];
+  return Array.from(availableCurrencies).map((cur) => ({ name: cur }));
+});
 
 const fetchInitialData = async () => {
   isPageLoading.value = true;
   isLoading.value = true;
-  const curr = await getAllBaseCurrencyPairs();
-  isLoading.value = false;
-  isPageLoading.value = false;
-  store.setCurrencies(curr);
-  const assets = await getListOfAvailableAssets();
-  store.setAvailableCurrencies(assets);
+  try {
+    const curr = await getAllBaseCurrencyPairs();
+    store.setCurrencies(curr);
+    const assets = await getListOfAvailableAssets();
+    store.setAvailableCurrencies(assets);
+  } catch (e) {
+    console.log('An error occured while fetching initial data:', e);
+  } finally {
+    isLoading.value = false;
+    isPageLoading.value = false;
+  }
 };
-fetchInitialData();
-const currencies = computed(() => store.currencies);
+
+const currencies = computed(() => store.currencies || []);
+
+onMounted(async () => {
+  await fetchInitialData();
+  currenciesToShow.value = currencies.value?.slice(0, ITEMS_PER_PAGE);
+});
 
 const searchPairs = async (baseCurrency) => {
   isLoading.value = true;
@@ -91,11 +107,16 @@ const searchPairs = async (baseCurrency) => {
     store.setCurrencies([]);
     return;
   }
-  const searchedCurrencies = await getAllBaseCurrencyPairs(baseCurrency);
-  isLoading.value = false;
-  store.setCurrencies(searchedCurrencies);
-  currenciesToShow.value = searchedCurrencies.slice(0, ITEMS_PER_PAGE);
-  offset.value = 0;
+  try {
+    const searchedCurrencies = await getAllBaseCurrencyPairs(baseCurrency);
+    store.setCurrencies(searchedCurrencies);
+    currenciesToShow.value = searchedCurrencies?.slice(0, ITEMS_PER_PAGE);
+    offset.value = 0;
+  } catch (e) {
+    console.log('An error occured while fetching currency pairs:', e);
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const filterCur = (e) => {
@@ -103,12 +124,10 @@ const filterCur = (e) => {
 };
 
 const updateCurrencies = ({ page }) => {
-  currenciesToShow.value = currencies.value.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+  currenciesToShow.value = currencies?.value?.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 };
 
-onMounted(() => {
-  currenciesToShow.value = currencies.value.slice(0, ITEMS_PER_PAGE);
-});
+watch(currency, (nv) => { console.log(nv); });
 
 </script>
 
@@ -130,7 +149,15 @@ onMounted(() => {
 
 .dropdown-wrapper {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 15px;
+}
+
+.dropdown-info-text {
+  margin: 0.5em;
+  font-size: 1rem;
 }
 
 .p-dropdown-placeholder {
@@ -139,6 +166,8 @@ onMounted(() => {
 
 .currency-dropdown {
   min-width: 270px;
+  flex-grow: 1;
+  max-width: 500px;
 }
 
 .currency-list {
