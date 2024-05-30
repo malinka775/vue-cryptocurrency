@@ -13,34 +13,54 @@
       </router-link>
       <router-link to="/greed-and-fear">
         <VButton
-          label="Greed and fear index"
+          label="Greed and fear idx"
           :severity="getSeverity('greed-and-fear')"
           class="p-button-sm"
         />
       </router-link>
     </nav>
 
-    <router-link to="/greed-and-fear" class="gnf" v-if="isShowGnfIndex" >
-      <span v-tooltip.bottom="'Greed and fear index'">GNF</span>
-      <span> index today: {{ gnf }}</span>
-    </router-link>
+    <VButton
+      v-tooltip.bottom="'Toggle between dark and light modes'"
+      class="p-button-sm theme-toggle"
+      outlined
+      severity="contrast"
+      :label="isDarkTheme ? 'Go light' : 'Go dark'"
+      @click="handleThemeToggle"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { usePrimeVue } from 'primevue/config';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCurrenciesStore } from '@/store/index';
 import { getFearAndGreedIndex } from '@/api/currency';
 
 const router = useRouter();
-const isShowGnfIndex = computed(() => router.currentRoute.value.href !== '/greed-and-fear');
 const coef = await getFearAndGreedIndex();
 const store = useCurrenciesStore();
 store.setGnfCoefficient(coef.data[0].value);
-const gnf = store.gnfCoefficient;
+
+const THEMES = {
+  DARK: 'lara-dark-pink',
+  LIGHT: 'lara-light-pink',
+};
+
+const isDarkTheme = ref(true);
 
 const getSeverity = (routeName) => (router.currentRoute.value.name === routeName ? 'primary' : 'secondary');
+
+const PrimeVue = usePrimeVue();
+
+const handleThemeToggle = () => {
+  isDarkTheme.value = !isDarkTheme.value;
+  const newTheme = isDarkTheme.value ? THEMES.DARK : THEMES.LIGHT;
+  const prevTheme = isDarkTheme.value ? THEMES.LIGHT : THEMES.DARK;
+
+  PrimeVue.changeTheme(prevTheme, newTheme, 'theme-link', () => {});
+};
 </script>
 
 <style scoped>
@@ -49,14 +69,10 @@ const getSeverity = (routeName) => (router.currentRoute.value.name === routeName
   display: flex;
   align-items: center;
 }
-.gnf {
+.theme-toggle {
   margin-left: auto;
-  text-decoration: none;
-  color: var(--text-color-secondary);
 }
-.gnf:visited {
-  color: inherit;
-}
+
 nav {
   display: flex;
   gap: 15px;

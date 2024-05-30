@@ -5,7 +5,6 @@ import Tooltip from 'primevue/tooltip';
 import App from './App.vue';
 import router from './router';
 import 'primevue/resources/primevue.min.css';
-import 'primevue/resources/themes/lara-dark-pink/theme.css';
 import components from './components/UI/ui-components';
 
 import './styles/styles.css';
