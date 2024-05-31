@@ -7,7 +7,7 @@
       <div class="dropdown-wrapper">
         <span class="dropdown-info-text"> Select base currency</span>
         <VDropdown
-          filter @change="(e) => filterCur(e)"
+          filter
           v-model="currency"
           :options="filterOptions"
           optionLabel="name"
@@ -119,15 +119,16 @@ const searchPairs = async (baseCurrency) => {
   }
 };
 
-const filterCur = (e) => {
-  searchPairs(e.value.name);
-};
-
 const updateCurrencies = ({ page }) => {
   currenciesToShow.value = currencies?.value?.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 };
 
-watch(currency, (nv) => { console.log(nv); });
+watch(currency, (newValue, oldValue) => {
+  if (newValue.name === oldValue.name) {
+    return;
+  }
+  searchPairs(newValue.name);
+});
 
 </script>
 
