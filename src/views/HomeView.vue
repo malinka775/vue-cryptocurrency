@@ -29,7 +29,9 @@
             />
           </template>
           <template v-else>
-            We weren't able to find pairs for base currency named "{{ searchedCurrencyName }}"
+            <p class="error">
+              Some problem occured while fetching data. Please try again later :'(
+            </p>
           </template>
         </div>
       </div>
@@ -59,18 +61,18 @@ import {
 } from 'vue';
 import { useCurrenciesStore } from '@/store/index';
 import CurrencyItem from '@/components/CurrencyItem.vue';
-import { getAllBaseCurrencyPairs, getListOfAvailableAssets } from '@/api/currency';
+import { getAllBaseCurrencyPairs, getListOfAvailableBaseCurrencies } from '@/api/currency';
 
 const store = useCurrenciesStore();
 
 const ITEMS_PER_PAGE = 10;
 
-const searchedCurrencyName = ref('');
 const currenciesToShow = ref([]);
 const offset = ref(0);
 const isPageLoading = ref(false);
 const isLoading = ref(false);
 const currency = ref({ name: 'USDT' });
+
 const filterOptions = computed(() => {
   const availableCurrencies = store.availableCurrencies || [];
   return Array.from(availableCurrencies).map((cur) => ({ name: cur }));
@@ -82,7 +84,7 @@ const fetchInitialData = async () => {
   try {
     const curr = await getAllBaseCurrencyPairs();
     store.setCurrencies(curr);
-    const assets = await getListOfAvailableAssets();
+    const assets = await getListOfAvailableBaseCurrencies();
     store.setAvailableCurrencies(assets);
   } catch (e) {
     console.log('An error occured while fetching initial data:', e);
@@ -101,7 +103,7 @@ onMounted(async () => {
 
 const searchPairs = async (baseCurrency) => {
   isLoading.value = true;
-  if (baseCurrency === '' || !store.availableCurrencies.has(baseCurrency.toUpperCase())) {
+  if (baseCurrency === '' || !store.availableCurrencies.has(baseCurrency)) {
     isLoading.value = false;
     currenciesToShow.value = [];
     store.setCurrencies([]);
@@ -194,6 +196,11 @@ watch(currency, (newValue, oldValue) => {
 
 .currency-pagination .p-paginator {
   padding: 0;
+}
+
+.error {
+  padding: 1em;
+  text-align: center;
 }
 
 </style>

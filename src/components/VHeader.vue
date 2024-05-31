@@ -1,6 +1,3 @@
-<!-- eslint-disable dot-notation -->
-<!-- eslint-disable quotes -->
-<!-- eslint-disable max-len -->
 <template>
   <div class="header">
     <nav>
@@ -43,21 +40,21 @@ const coef = await getFearAndGreedIndex();
 const store = useCurrenciesStore();
 store.setGnfCoefficient(coef.data[0].value);
 
-const THEMES = {
+const getSeverity = (routeName) => (router.currentRoute.value.name === routeName ? 'primary' : 'secondary');
+
+// Theme handling
+
+const THEME = {
   DARK: 'lara-dark-pink',
   LIGHT: 'lara-light-pink',
 };
-
 const isDarkTheme = ref(true);
-
-const getSeverity = (routeName) => (router.currentRoute.value.name === routeName ? 'primary' : 'secondary');
-
 const PrimeVue = usePrimeVue();
 
 const handleThemeToggle = () => {
   isDarkTheme.value = !isDarkTheme.value;
-  const newTheme = isDarkTheme.value ? THEMES.DARK : THEMES.LIGHT;
-  const prevTheme = isDarkTheme.value ? THEMES.LIGHT : THEMES.DARK;
+  const newTheme = isDarkTheme.value ? THEME.DARK : THEME.LIGHT;
+  const prevTheme = isDarkTheme.value ? THEME.LIGHT : THEME.DARK;
 
   PrimeVue.changeTheme(prevTheme, newTheme, 'theme-link', () => {});
 };

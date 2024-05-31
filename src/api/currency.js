@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+const ERROR_MESSAGE_DEFAULT = 'Something went wrong. Please try again later';
+
 const binanceAxiosConfig = {
   baseURL: 'https://api.binance.com/api/v3',
   headers: {
@@ -8,7 +10,7 @@ const binanceAxiosConfig = {
 };
 
 const alternAxiosConfig = {
-  baseURL: `https://api.allorigins.win/get?url=${encodeURIComponent('https://api.alternative.me')}`,
+  baseURL: `https://api.allorigins.win/get?url=${encodeURIComponent('https://api.alternative.me')}`, // CORS workaround
   headers: {
     'Content-Type': 'application/json',
   },
@@ -16,19 +18,14 @@ const alternAxiosConfig = {
 
 const binanceAxiosInstance = axios.create(binanceAxiosConfig);
 const alternAxiosInstance = axios.create(alternAxiosConfig);
-async function getListOfAvailableAssets() {
+
+async function getListOfAvailableBaseCurrencies() {
   try {
     const response = await binanceAxiosInstance.get('/exchangeInfo');
-    console.log('resp', response);
     const symbols = response.data.symbols.map((symbol) => symbol.quoteAsset);
     return new Set(symbols);
   } catch (e) {
-    if (e.response) {
-      console.log(e.response);
-    } else {
-      console.log(e.message || 'Something went wrong. Please try again later');
-    }
-    throw new Error(e.message);
+    throw new Error(e.message || ERROR_MESSAGE_DEFAULT);
   }
 }
 async function getAllBaseCurrencyPairs(currency = 'USDT') {
@@ -38,27 +35,19 @@ async function getAllBaseCurrencyPairs(currency = 'USDT') {
     const pairs = response.data;
     const regExp = new RegExp(`${currencyName}$`);
     const currencyPairs = [];
-    // eslint-disable-next-line
-    for (const pair of pairs) {
-      const { symbol } = pair;
+    pairs.forEach(({ symbol, price }) => {
       if (symbol.match(regExp)) {
         currencyPairs.push({
           id: symbol,
           currency: symbol.slice(0, -currencyName.length),
           baseCurrency: currencyName,
-          price: pair.price,
+          price,
         });
       }
-    }
-    console.log('currencyPairs', currencyPairs);
+    });
     return currencyPairs;
   } catch (e) {
-    if (e.response) {
-      console.log(e.response);
-    } else {
-      console.log(e.message || 'Something went wrong. Please try again later');
-    }
-    throw new Error(e.message);
+    throw new Error(e.message || ERROR_MESSAGE_DEFAULT);
   }
 }
 
@@ -68,13 +57,8 @@ async function getFearAndGreedIndex() {
     const indexData = response.data.contents;
     return JSON.parse(indexData);
   } catch (e) {
-    if (e.response) {
-      console.log(e.response);
-    } else {
-      console.log(e.message || 'Something went wrong. Please try again later');
-    }
-    throw new Error(e.message);
+    throw new Error(e.message || ERROR_MESSAGE_DEFAULT);
   }
 }
 
-export { getAllBaseCurrencyPairs, getFearAndGreedIndex, getListOfAvailableAssets };
+export { getAllBaseCurrencyPairs, getFearAndGreedIndex, getListOfAvailableBaseCurrencies };
