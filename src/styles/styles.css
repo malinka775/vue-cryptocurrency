@@ -2,7 +2,6 @@ html {
   font-size: 1em;
 }
 #app {
-  --font-family: Roboto, sans-serif;
   font-family: var(--font-family);
   background: var(--surface-100);
   min-height: 100vh;
