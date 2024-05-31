@@ -1,0 +1,18 @@
+html {
+  font-size: 1em;
+}
+#app {
+  font-family: var(--font-family);
+  background: var(--surface-100);
+  min-height: 100vh;
+}
+
+body {
+  margin: 0;
+}
+
+@media screen and (max-width: 568px) {
+  html {
+    font-size: 0.8em;
+  }
+}
