@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 import axios from 'axios';
 
-class ApiWorker {
+class ApiProvider {
   constructor({ baseURL, headers }, fixCors = false) {
     this.instance = axios.create({
       baseURL,
@@ -24,4 +24,4 @@ class ApiWorker {
   }
 }
 
-export default ApiWorker;
+export default ApiProvider;

@@ -1,4 +1,4 @@
-import ApiWorker from './index.js';
+import ApiProvider from './index.js';
 
 const ERROR_MESSAGE_DEFAULT = 'Something went wrong. Please try again later';
 
@@ -16,8 +16,8 @@ const alternAxiosConfig = {
   },
 };
 
-const binanceAxiosInstance = new ApiWorker(binanceAxiosConfig).getInstance();
-const alternAxiosInstance = new ApiWorker(alternAxiosConfig, true).getInstance();
+const binanceAxiosInstance = new ApiProvider(binanceAxiosConfig).getInstance();
+const alternAxiosInstance = new ApiProvider(alternAxiosConfig, true).getInstance();
 
 async function getListOfAvailableBaseCurrencies() {
   try {
