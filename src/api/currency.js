@@ -1,4 +1,4 @@
-import axios from 'axios';
+import ApiProvider from './index.js';
 
 const ERROR_MESSAGE_DEFAULT = 'Something went wrong. Please try again later';
 
@@ -10,14 +10,14 @@ const binanceAxiosConfig = {
 };
 
 const alternAxiosConfig = {
-  baseURL: `https://api.allorigins.win/get?url=${encodeURIComponent('https://api.alternative.me')}`, // CORS workaround
+  baseURL: 'https://api.alternative.me',
   headers: {
     'Content-Type': 'application/json',
   },
 };
 
-const binanceAxiosInstance = axios.create(binanceAxiosConfig);
-const alternAxiosInstance = axios.create(alternAxiosConfig);
+const binanceAxiosInstance = new ApiProvider(binanceAxiosConfig).getInstance();
+const alternAxiosInstance = new ApiProvider(alternAxiosConfig, true).getInstance();
 
 async function getListOfAvailableBaseCurrencies() {
   try {

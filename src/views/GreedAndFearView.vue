@@ -40,7 +40,6 @@ const loadImg = async () => {
   const image = new Image();
   image.src = 'https://alternative.me/crypto/fear-and-greed-index.png';
   image.onload = () => {
-    console.log('image loaded');
     imgSrc.value = image.src;
     isImgLoading.value = false;
   };
